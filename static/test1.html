@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    let mymodule = function () {
+        let moduleName = 'module'  // private
+        // public
+        function setModuleName(name) {
+            moduleName = name
+        }
+        // public
+        function getModuleName() {
+            return moduleName
+        }
+        return { setModuleName, getModuleName }  // 暴露行为
+    }
+    let module = mymodule();
+    let module2 = mymodule();
+    alert(module.getModuleName())
+    module.setModuleName("modb2");
+    alert(module.getModuleName())
+    alert(module2.getModuleName())
+    let a = 10 ;
+    a = 20;
+
+
+</script>
+
+</html>
