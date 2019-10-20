@@ -3,16 +3,22 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import AtComponents from 'at-ui'
 import Axios from 'axios'
-import 'at-ui-style'    // 引入组件样式
-import 'vue-beauty/package/style/vue-beauty.min.css'
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-import vueBeauty from 'vue-beauty'
-Vue.use(ElementUI);
-Vue.use(vueBeauty)
-Vue.use(AtComponents)
+import { Button, Select,Input,Card, Option, Message, Container,Aside,Main,Form, FormItem,Col,Row } from 'element-ui';
+
+Vue.use(Button)
+Vue.use(Select)
+Vue.use(Input)
+Vue.use(Card)
+Vue.use(Option)
+Vue.use(Container)
+Vue.use(Aside)
+Vue.use(Main)
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Col)
+Vue.use(Row)
+Vue.prototype.$message = Message
 Vue.prototype.$axios=Axios
 Vue.config.productionTip = false
 /* eslint-disable no-new */

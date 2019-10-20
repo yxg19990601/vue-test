@@ -1,10 +1,16 @@
 <template>
-  <div>
-    用户名:<input type="text" v-model="loginForm.username" placeholder="请输入用户名"/>
-    <br><br>
-    密码： <input type="password" v-model="loginForm.password" placeholder="请输入密码"/>
-    <br><br>
-    <button v-on:click="login">登录</button>
+  <div style="width: 300px;margin: 0px auto;border-radius: 30px">
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>用户登陆</span>
+      </div>
+      <el-input v-model="loginForm.username"  placeholder="请输入用户名"></el-input>
+      <br><br>
+      <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"/>
+      <br><br>
+      <el-button type="primary" v-on:click="login"  style="width: 150px">登录</el-button>
+    </el-card>
+
   </div>
 </template>
 

@@ -1,7 +1,6 @@
 <template>
 
   <div id="app">
-    <img src="./assets/man.png">
     <router-view/>
   </div>
 </template>
@@ -18,7 +17,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #500c0b;
-  margin-top: 60px;
+  margin: 0px auto;
 }
 </style>
