@@ -4,7 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Axios from 'axios'
-import { Button, Select,Input,Card, Option, Message, Container,Aside,Main,Form, FormItem,Col,Row } from 'element-ui';
+import { Button, Select,Input,Card, Option, Message, Container,Aside,Main,Form, FormItem,Col,Row,DatePicker,Calendar, ButtonGroup,Icon } from 'element-ui';
 
 Vue.use(Button)
 Vue.use(Select)
@@ -18,6 +18,10 @@ Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Col)
 Vue.use(Row)
+Vue.use(DatePicker)
+Vue.use(Calendar)
+Vue.use(ButtonGroup)
+Vue.use(Icon)
 Vue.prototype.$message = Message
 Vue.prototype.$axios=Axios
 Vue.config.productionTip = false
