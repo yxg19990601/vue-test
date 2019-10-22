@@ -6,22 +6,37 @@
   <el-container >
 
 
-    <el-aside width="700px" type="prev-month" style="padding: 20px;">
+    <el-aside width="600px"  style="padding: 20px;">
 
 
 
-      <el-calendar style="border:1px solid #EBEEF5" v-model="dataForm.colDate">
+      <el-calendar  type="" style="border:1px solid #EBEEF5"  v-model="dataForm.colDate">
         <!-- 这里使用的是 2.5 slot 语法，对于新项目请使用 2.6 slot 语法-->
-        <div @click="clickCalDate(data.day)"
+        <div
           slot="dateCell"
           slot-scope="{date, data}">
           {{data.day.split('-')[2]}}
-          <br><br>
-          <i  v-if="1 == 1" class="el-icon-success" style="color: #00a854"></i>
-          <i class="el-icon-error" style="color: #ff4679"></i>
+
+
+          <div style="font-size: 10px;margin-top: 12px"> 99999</div>
+<!--          <input v-if="data.isSelected" style="height: 20px;width: 30px"></input>-->
+<!--          <input v-focus v-if="data.isSelected ? true:false" size="mini" v-model="dataForm.realValue"></input>-->
+          <i v-if="data.isSelected ? clickCalDate(data.day):false"  class="el-icon-success" style="color: #00a854;margin-top: 5px"></i>
+          <i  v-if="Math.random() > 0.5" class="el-icon-error" style="color: #ff4679"></i>
         </div>
 
       </el-calendar>
+      <el-dialog title="编辑抄表数" :visible.sync="dialogFormVisible" width="20%" center>
+        <el-form :model="dataForm">
+          <el-form-item label="读表值" :label-width="formLabelWidth">
+            <el-input id="" v-model="dataForm.name" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        </div>
+      </el-dialog>
     </el-aside>
 
 
@@ -70,7 +85,7 @@
             </el-col>
             <el-col :span="4"  >
               <div class="grid-content bg-purple">
-                <el-input v-model="dataForm.realValue" style="width: 220px"></el-input>
+                <el-input  ref="inputeRealValue"  v-model="dataForm.realValue" style="width: 220px"></el-input>
               </div>
             </el-col>
 
@@ -85,7 +100,7 @@
                 <div class="grid-content bg-purple">
                   <el-date-picker
                     v-model="dataForm.colDate"
-                    type="datetime"
+                    type="date"
                     placeholder="选择日期时间">
                   </el-date-picker>
                 </div>
@@ -125,6 +140,9 @@
         name: "addDeviceEnergyRec",
         data(){
           return {
+              formLabelWidth: '80px',
+              dialogFormVisible: false,
+              first: true,
               msg:"你好啊",
               copy:{},
 
@@ -139,7 +157,15 @@
               dataForm:{
                   colSettingId:"", //采集点ID
                   realValue:"", //表读数
-                  colDate: new Date() //采集时间
+                  colDate: '', //采集时间
+                  name: '',
+                  region: '',
+                  date1: '',
+                  date2: '',
+                  delivery: false,
+                  type: [],
+                  resource: '',
+                  desc: ''
               }
           }
 
@@ -169,29 +195,44 @@
              */
         },
         methods: {
+            focusInput() {
+
+                debugger
+            },
             disabledDate(time) {
                 /// 不可选天数的设置
-                // return time.getTime() >  new Date(new Date().toLocaleDateString()).getTime();  /// 今天之后不能选择
-                // return time.getTime() > Date.now(); /// 今天之前不可选
                 return time.getTime()   > new Date(new Date().toLocaleDateString()).getTime()-24*60*60*1000;  ///  今天的前一天开始不能选择 （比如今天30号，只能选择到29号，30号后面的都不能选择）
 
             },
             clickCalDate(date){
-                debugger
-              this.$message("改变日历"+date)
+                if(this.first) {
+                    this.first = false
+                    return false
+                }
+                var starttime = new Date(Date.parse(date));
+
+                var endtime = new Date();
+                endtime.setDate(endtime.getDate()+1)
+                if(starttime > endtime) {
+                    debugger
+                    return false
+                }
+
+               // $(".el-calendar-day input").css('padding',"0px")
+                this.$refs.inputeRealValue.focus()
+
+                // this.dialogFormVisible = true;
                 return true
             },dataFilter(searchData){
                 //对绑定数据赋值
                 this.options = JSON.parse(JSON.stringify(this.copy));
                 this.options = this.options.filter((item) => {
-
                     let subOption = item.options.filter((subItem) => {
                         if((""+subItem.id).indexOf(searchData) !== -1 || subItem.label.indexOf(searchData) !== -1) {
                             return true;
                         }
-
                     })
-                    item.options = subOption
+                    item.options =  subOption
                     if(subOption.length !== 0) {
                         return true;
                     }
@@ -200,10 +241,19 @@
             }
         }
     }
+
+    $(function () {
+        $(".el-calendar-day").height("50px")
+        $(".el-calendar-day").css('padding',"0px")
+    })
 </script>
 
 <style scoped>
 .colsettingname{
   color: #ff4679;
 }
+
+
+
 </style>
+
