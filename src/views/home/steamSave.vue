@@ -1,4 +1,4 @@
-<<template>
+<template>
   <div>
     <el-row type="flex" class="row-bg" justify="center" :gutter="15" >
       <el-col :span="6" align = "center">
