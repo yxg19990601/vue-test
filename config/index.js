@@ -12,19 +12,16 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/ems': {
-        target: 'http://192.168.1.135:8888',
+        target: 'http://127.0.0.1:8080',
         changeOrigin: true,
         pathRewrite: {
           '^/ems': '/ems'
         }
-
       }
-
-
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '192.168.1.135', // can be overwritten by process.env.HOST
     port: 8001, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

@@ -21,10 +21,7 @@
            {{data.day.split('-')[2]}}
 
             <div style="font-size: 10px;margin-top: 12px"> {{colSettingData[data.day] === undefined?'':colSettingData[data.day].reportValue}}</div>
-  <!--          <input v-if="data.isSelected" style="height: 20px;width: 30px"></input>-->
-  <!--          <input v-focus v-if="data.isSelected ? true:false" size="mini" v-model="dataForm.realValue"></input>-->
             <i v-if="hasKey() && colSettingData[data.day] !== undefined"  class="el-icon-success" style="color: #00a854;margin-top: 5px"></i>
-  <!--          <i  v-if="hasKey() &&colSettingData[data.day] === undefined" class="el-icon-error" style="color: #ff4679"></i>-->
 
         </div>
 
@@ -65,49 +62,15 @@
 
           </el-tree>
         </div></el-col>
-        <el-col :span="10"><div class="grid-content bg-purple">
+        <el-col :span="14"><div class="grid-content bg-purple">
           <el-form @submit.native.prevent style="border:1px solid #EBEEF5" :model="dataForm" label-width="80px">
-
-
-           <!-- <el-row :gutter="20" style="margin: 20px 5px">
-              <el-col :span="5" :offset="3" >
-                <div class="grid-content bg-purple">
-                  <span style="line-height: 40px;float: left;color: #606266;">采集点名：</span>
-                </div>
-              </el-col>
-              <el-col :span="12"  >
-                <div class="grid-content bg-purple">
-                  <el-select  v-model="dataForm.colSettingId" filterable :filter-method="dataFilter"  placeholder="请选择采集点">
-                    <span style="font-size: 14px;margin-left: 5px;color: #606266;">采集点名称</span>
-                    <span style="float: right; color: #6aa62d; font-size: 13px;margin-right: 5px">采集点ID</span>
-                    <hr>
-                    <el-option-group
-                      v-for="group in options"
-                      :key="group.label"
-                      :label="group.label"
-                    >
-                      <el-option
-                        v-for="item in group.options"
-                        :key="item.value"
-                        :label="item.label+'    >    '+item.id"
-                        :value="item.id"
-                      >
-                        <span v-bind:class="Math.random() > 0.5 ? 'colsettingname':''" style="float: left">{{ item.label }}</span>
-                        <span style="float: right; color: #6aa62d; font-size: 13px">{{ item.id }}</span>
-                      </el-option>
-                    </el-option-group>
-                  </el-select>
-                </div>
-              </el-col>
-
-            </el-row>-->
             <el-row :gutter="20" style="margin: 20px 5px">
-              <el-col :span="5" :offset="3"  >
+              <el-col :span="7" :offset="2"  >
                 <div class="grid-content bg-purple">
                   <span style="line-height: 40px;float: left;color: #606266">采集点值：</span>
                 </div>
               </el-col>
-              <el-col :span="4"  >
+              <el-col :span="3"  >
                 <div class="grid-content bg-purple">
                   <el-input  ref="inputeRealValue" clearable  v-model="dataForm.realValue" style="width: 220px" @keyup.enter.native="submitData"></el-input>
                 </div>
@@ -125,11 +88,7 @@
 
           </el-form>
         </div></el-col>
-
       </el-row>
-
-
-
     </el-main>
   </el-container>
   </el-card>
@@ -149,7 +108,6 @@
                 let currentKey = this.$refs.tree.getCurrentKey();
                 if(currentKey != null) {
                     let curentDate = '';
-
                     if(typeof(this.dataForm.colDate) === "string") {
                         if(this.dataForm.colDate.length !== 0) {
                             curentDate = this.dataForm.colDate
@@ -258,7 +216,6 @@
             },
             getTreeData() {
                  let curentDate = '';
-
                  if(typeof(this.dataForm.colDate) === "string") {
                      if(this.dataForm.colDate.length !== 0) {
                          curentDate = this.dataForm.colDate
@@ -286,7 +243,7 @@
                     return false;
                 }
                 debugger
-                let reg = /^(([^0][0-9]*|0)\.([0-9]{1,2})$)|^([^0][0-9]+|0)$/;
+                let reg = /^(([^0][0-9]*|0)\.([0-9]{1,2})$)|^([^0][0-9]*|0)$/;
 
 
                 let isTrue = reg.test(this.dataForm.realValue);
@@ -306,13 +263,10 @@
                 } else {
                     curentDate =  this.dateFtt("yyyy-MM-dd",this.dataForm.colDate)
                 }
-
-
                 this.$axios
                     .get('/ems/servlet/InputDataAction/addData?colDate='+curentDate+'&colSetting='+currentKey+'&inputVlue='+this.dataForm.realValue)
                     .then(successResponse => {
                         let res = successResponse.data;
-                        debugger
                         if(res.code == 200) {
                             this.$message("保存成功!")
                         } else {
@@ -422,16 +376,11 @@
         }
     }
 
-    $(function () {
-        $(".el-calendar-day").height("50px")
-        $(".el-calendar-day").css('padding',"0px")
-    })
+
 </script>
 
 <style scoped>
-.colsettingname{
-  color: #ff4679;
-}
+
 
 .custom-tree-node {
   flex: 1;
@@ -444,5 +393,13 @@
 
 
 
+</style>
+
+<style>
+  .el-calendar-day{
+    height: 66px !important;
+    padding: 0px !important;
+
+  }
 </style>
 
