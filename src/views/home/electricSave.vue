@@ -27,13 +27,9 @@
               <template slot="header" slot-scope="scope">
                 基准期平期耗电量<br>（kWh）
               </template>
-
               <template slot-scope="scope">
                 {{ scope.row.flat }}
-
               </template>
-
-
 
             </el-table-column>
 
@@ -322,19 +318,33 @@
         <code>公式2：未开放区域中央空调能耗=已开放空调区域总冷量（冷量表）（kWh）× 中央空调总用电量（kWh）÷ 中央空调总冷量（kWh）÷已开放空调区域面积（m2）× 未开放空调区域面积（m2）</code>
       </el-dialog>
 
-      <el-dialog top="5vh" width="80%" title="天数据" :visible.sync="dialogTableVisible2">
+      <el-dialog top="5vh" width="80%" :title="curentDate.substr(0,7).replace('-','年')+'月数据'" :visible.sync="dialogTableVisible2">
         <el-row type="flex" class="row-bg" justify="center" :gutter="15" >
-          <el-col :span="6" align = "center">
-            左上
+          <el-col :span="6" align = "center"  >
+            <el-card shadow="never">
+              <div slot="header">
+                <span>核定能耗占基准期比例</span>
+              </div>
+              <p style="text-align: left;margin: 10px 20px 5px;font-size: 16px;font-weight: 700;color: #606266">日节能量：<span>1234kWh</span></p>
+              <el-divider class="hr"></el-divider>
+              <div id="pie" :style="{width: '100%', height: '242px'}"></div>
+            </el-card>
+
           </el-col>
-          <el-col :span="18" align = "center">
-            右上
+          <el-col :span="18" align = "center" style="padding: 0px 50px">
+            <el-calendar style="border: 1px solid rgb(235, 238, 245);" :value="curentDate">
+              <template
+                slot="dateCell"
+                slot-scope="{date, data}">
+                <span class="cell_date">{{data.day.split('-')[2]}}</span>
+                <div class="cell_data" style="text-align: right">{{handleCalendarData(data.day)}}</div>
+              </template>
+            </el-calendar>
           </el-col>
         </el-row>
 
         <el-row type="flex" class="row-bg" justify="center" :gutter="15" >
           <el-col :span="6" align = "center">
-            左下
           </el-col>
           <el-col :span="18" align = "center">
             <div id="myChart"  class="echartBox" :style="{width: '100%', height: '300px'}"></div>
@@ -360,6 +370,7 @@
 
             window.onresize = () => {
                 this.myChart.resize();
+                this.pie.resize();
             }
             this.$axios
                 .get('/ems/servlet/InputDataAction/getElectricSaveData?year='+this.selectDate)
@@ -368,13 +379,20 @@
                 })
                 .catch(failResponse => {
                 })
-
-
-
-
         },
         methods :{
-
+            handleCalendarData(date) {
+                let cum = this.month;
+                let calm = date.split('-')[1];
+                if (calm == cum) {
+                    let result = this.monthdata[Number(date.split('-')[2]).toString()];
+                    if (result) {
+                        result = Number(result).toFixed(0)
+                    }
+                    return result;
+                }
+                return  '';
+            },
             // 加载图标
             loadCharts(date) {
                 this.myChart = this.$echarts.init(document.getElementById('myChart'))
@@ -382,6 +400,7 @@
                     .get('/ems/servlet/chart/reportComputeBytreeId?treeId=2889&dateType=2&level=1&date='+date)
                     .then(successResponse => {
                         let data = successResponse.data;
+                       this.monthdata = data.series[0];
                         let option = {
                             color: ['#65abdb'],
                             tooltip : {
@@ -423,6 +442,44 @@
                     .catch(failResponse => {
                     })
             },
+            loadPip() {
+                 this.pie = this.$echarts.init(document.getElementById('pie'))
+                let option = {
+                    color:['#d4effa','#65abdb'],
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{d}%"
+                    },
+
+                    series: [
+                        {
+                            type:'pie',
+                            radius: ['75%', '90%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                normal: {
+
+                                    position: 'center',
+                                    fontSize: 15,
+                                    fontWeight: 'bold',
+                                    color:'#606266'
+
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    show: true
+                                }
+                            },
+                            data:[
+                                {value:79, name:''},
+                                {value:21, name:'日基准值：187493kWh '}
+                            ]
+                        }
+                    ]
+                };
+                this.pie.setOption(option,true);
+            },
             cellClick(row, column, cell, event) {
 
                 if (cell.cellIndex === 0) {
@@ -431,8 +488,9 @@
                     if (row.m < 9) {
                         currentMonth = '0'+row.m;
                     }
-                    this.$nextTick(() =>  this.loadCharts('2019-'+currentMonth+'-01 00:00:00'))
-
+                    this.month = currentMonth;
+                    this.curentDate = this.selectDate+'-'+currentMonth+'-'+'01'
+                    this.$nextTick(() =>  {this.loadCharts(this.selectDate+'-'+currentMonth+'-01 00:00:00');this.loadPip()})
                 }
 
             },
@@ -497,6 +555,10 @@
         },
         data() {
             return {
+                pie:{},
+                curentDate:'',
+                month:'',
+                monthdata:[],
                 myCharta : {},
                 dialogTableVisible : false,
                 dialogTableVisible2: false,
@@ -511,8 +573,39 @@
 
 <style>
   .table-1 td:nth-child(1)  {
-    cursor:pointer;
+     cursor:pointer;
   }
-</style>
 
+  .el-calendar-day{
+    height: 43px !important;
+  }
+
+  .el-calendar-table:not(.is-range) td.next, .el-calendar-table:not(.is-range) td.prev {
+    color: #fff !important;
+  }
+  .cell_data{
+    position: relative;
+    top: -8px;
+    font-size: 20px;
+    font-weight:500;
+    margin-right: 10px;
+  }
+  .el-calendar__body {
+    padding: 12px 10px 15px;
+
+  }
+
+  .el-calendar__header{
+    display: none;
+  }
+
+  .hr{
+    margin: 10px 0px;
+    height: 2px;
+    width:90%
+  }
+
+
+
+</style>
 
