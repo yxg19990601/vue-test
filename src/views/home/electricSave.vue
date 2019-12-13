@@ -8,17 +8,14 @@
             sum-text="合计"
             border
             @cell-click="cellClick"
-
           >
               <el-table-column
-
                 prop="m"
                 label="月份"
                header-align="center" align="center">
                 <template slot="header" slot-scope="scope">
                   月份
                 </template>
-
                 <template slot-scope="scope">
                   {{  handleValue(scope.row.m) }}月
                 </template>
@@ -30,9 +27,7 @@
               <template slot-scope="scope">
                 {{ scope.row.flat }}
               </template>
-
             </el-table-column>
-
             <el-table-column
               header-align="center"
               align="center"
@@ -41,8 +36,6 @@
               <template slot="header" slot-scope="scope">
                 基准期谷期耗电量<br>（kWh）
               </template>
-
-
             </el-table-column>
 
             <el-table-column
@@ -318,7 +311,7 @@
         <code>公式2：未开放区域中央空调能耗=已开放空调区域总冷量（冷量表）（kWh）× 中央空调总用电量（kWh）÷ 中央空调总冷量（kWh）÷已开放空调区域面积（m2）× 未开放空调区域面积（m2）</code>
       </el-dialog>
 
-      <el-dialog top="5vh" width="80%" :title="dia_title" :visible.sync="dialogTableVisible2">
+      <el-dialog top="5vh" width="85%" :title="dia_title" :visible.sync="dialogTableVisible2">
         <el-row type="flex" class="row-bg" justify="center" :gutter="15" >
           <el-col :span="6" align = "center"  >
             <el-card shadow="never">
@@ -354,7 +347,7 @@
 
                 :show-header="false"
                 :data="br_data"
-                style="width: 100%;font-weight: 500">
+                style="width: 100%;font-weight: 500;font-size: 15px">
                 <el-table-column
                   prop="name"
                   align="right"
@@ -362,7 +355,7 @@
                 </el-table-column>
                 <el-table-column
                   prop="data"
-                  width="120">
+                  width="115">
                 </el-table-column>
 
               </el-table>
@@ -370,7 +363,7 @@
             </el-card>
           </el-col>
           <el-col :span="18" align = "center">
-            <div id="myChart"   :style="{width: '100%', height: '300px'}"></div>
+            <div id="myChart"   :style="{width: '100%', height: '250px'}"></div>
           </el-col>
         </el-row>
       </el-dialog>
@@ -614,13 +607,13 @@
                 dialogTableVisible2: false,
                 tableData:[],
                 br_data:[{
-                    name: '增减设备用电：',
+                    name: '增减设备用电',
                     data: '123452 kWh',
                 }, {
-                    name: '增减设备运行时长用电：',
+                    name: '增减设备运行时长用电',
                     data: '123452 kWh',
                 }, {
-                    name: '冷量指标用电：',
+                    name: '冷量指标用电',
                     data: '123452 kWh'
                 }],
             }
@@ -635,11 +628,9 @@
   .table-1 td:nth-child(1)  {
      cursor:pointer;
   }
-
   .el-calendar-day{
     height: 43px !important;
   }
-
   .el-calendar-table:not(.is-range) td.next, .el-calendar-table:not(.is-range) td.prev {
     color: #fff !important;
   }
@@ -653,18 +644,19 @@
   .el-calendar__body {
     padding: 12px 10px 15px;
   }
-
   .el-calendar__header{
     display: none;
   }
-
   .hr{
     margin: 10px 0px;
     height: 2px;
     width:90%
   }
-
-
-
+  .el-dialog__body{
+    padding: 10px 20px;
+  }
+  .el-dialog__header{
+    padding: 10px 20px 10px;
+  }
 </style>
 
