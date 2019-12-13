@@ -318,11 +318,11 @@
         <code>公式2：未开放区域中央空调能耗=已开放空调区域总冷量（冷量表）（kWh）× 中央空调总用电量（kWh）÷ 中央空调总冷量（kWh）÷已开放空调区域面积（m2）× 未开放空调区域面积（m2）</code>
       </el-dialog>
 
-      <el-dialog top="5vh" width="80%" :title="curentDate.substr(0,7).replace('-','年')+'月数据'" :visible.sync="dialogTableVisible2">
+      <el-dialog top="5vh" width="80%" :title="dia_title" :visible.sync="dialogTableVisible2">
         <el-row type="flex" class="row-bg" justify="center" :gutter="15" >
           <el-col :span="6" align = "center"  >
             <el-card shadow="never">
-              <div slot="header">
+              <div slot="header" style="font-size: 16px;font-weight: 700;color: #606266">
                 <span>核定能耗占基准期比例</span>
               </div>
               <p style="text-align: left;margin: 10px 20px 5px;font-size: 16px;font-weight: 700;color: #606266">日节能量：<span>1234kWh</span></p>
@@ -332,7 +332,7 @@
 
           </el-col>
           <el-col :span="18" align = "center" style="padding: 0px 50px">
-            <el-calendar style="border: 1px solid rgb(235, 238, 245);" :value="curentDate">
+            <el-calendar style="border: 1px solid rgb(235, 238, 245);" v-model="curentDate">
               <template
                 slot="dateCell"
                 slot-scope="{date, data}">
@@ -345,9 +345,32 @@
 
         <el-row type="flex" class="row-bg" justify="center" :gutter="15" >
           <el-col :span="6" align = "center">
+            <el-card class="box-card" style="margin-top: 50px;font-size: 16px;font-weight: 600;color: #606266;" shadow="never">
+              <div slot="header" >
+                <span>{{xzz_title}}</span>
+              </div>
+
+              <el-table
+
+                :show-header="false"
+                :data="br_data"
+                style="width: 100%;font-weight: 500">
+                <el-table-column
+                  prop="name"
+                  align="right"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="data"
+                  width="120">
+                </el-table-column>
+
+              </el-table>
+
+            </el-card>
           </el-col>
           <el-col :span="18" align = "center">
-            <div id="myChart"  class="echartBox" :style="{width: '100%', height: '300px'}"></div>
+            <div id="myChart"   :style="{width: '100%', height: '300px'}"></div>
           </el-col>
         </el-row>
       </el-dialog>
@@ -362,12 +385,11 @@
 </template>
 
 <script>
+
     export default {
         name: "electricSave",
         props: ['selectDate'],
         mounted() {
-
-
             window.onresize = () => {
                 this.myChart.resize();
                 this.pie.resize();
@@ -380,12 +402,41 @@
                 .catch(failResponse => {
                 })
         },
+        watch: {
+            curentDate:{
+                handler:'handleLeftData'
+            }
+
+        },
         methods :{
+
+            handleLeftData(val) {
+              let a = {};
+                let date = val;
+                // 修改标题
+                if (typeof val !== "string") {
+                    date = this.$dateFormat("yyyy-MM-dd",val)
+                    this.xzz_title = date+" 修正值";
+                } else {
+                    this.xzz_title = val+" 修正值";
+                }
+                // 改变环形图数据
+
+                let tableData2 = this.tableData;
+                  debugger
+                //基准器能耗
+                let zjnh = this.tableData[this.month-1].be / new Date(Number(this.selectDate),this.month,0).getDate();
+                // 核定器能耗
+                let hdqnh = this.monthdata[(Number(date.split('-')[2])-1).toString()];
+                // 改变表格数据
+                debugger
+            },
+
             handleCalendarData(date) {
                 let cum = this.month;
                 let calm = date.split('-')[1];
                 if (calm == cum) {
-                    let result = this.monthdata[Number(date.split('-')[2]).toString()];
+                    let result = this.monthdata[(Number(date.split('-')[2])-1).toString()];
                     if (result) {
                         result = Number(result).toFixed(0)
                     }
@@ -399,6 +450,7 @@
                 this.$axios
                     .get('/ems/servlet/chart/reportComputeBytreeId?treeId=2889&dateType=2&level=1&date='+date)
                     .then(successResponse => {
+
                         let data = successResponse.data;
                        this.monthdata = data.series[0];
                         let option = {
@@ -445,12 +497,11 @@
             loadPip() {
                  this.pie = this.$echarts.init(document.getElementById('pie'))
                 let option = {
-                    color:['#d4effa','#65abdb'],
+                    color:['#e1f0fa','#65abdb'],
                     tooltip: {
                         trigger: 'item',
                         formatter: "{d}%"
                     },
-
                     series: [
                         {
                             type:'pie',
@@ -458,7 +509,6 @@
                             avoidLabelOverlap: false,
                             label: {
                                 normal: {
-
                                     position: 'center',
                                     fontSize: 15,
                                     fontWeight: 'bold',
@@ -490,6 +540,7 @@
                     }
                     this.month = currentMonth;
                     this.curentDate = this.selectDate+'-'+currentMonth+'-'+'01'
+                    this.dia_title = this.selectDate+'年'+currentMonth+'月数据';
                     this.$nextTick(() =>  {this.loadCharts(this.selectDate+'-'+currentMonth+'-01 00:00:00');this.loadPip()})
                 }
 
@@ -511,7 +562,6 @@
                 const sums = [];
                 columns.forEach((column, index) => {
                         const values = data.map(item => Number(item[column.property])?Number(item[column.property]):0);
-
                         if (!values.every(value => isNaN(value))) {
                             sums[index] = values.reduce((prev, curr) => {
                                 return prev + curr;
@@ -519,8 +569,6 @@
                         } else {
                             sums[index] = 'N/A';
                         }
-
-
                 });
 
                 return sums;
@@ -555,6 +603,8 @@
         },
         data() {
             return {
+                xzz_title: '',
+                dia_title: '',
                 pie:{},
                 curentDate:'',
                 month:'',
@@ -563,6 +613,16 @@
                 dialogTableVisible : false,
                 dialogTableVisible2: false,
                 tableData:[],
+                br_data:[{
+                    name: '增减设备用电：',
+                    data: '123452 kWh',
+                }, {
+                    name: '增减设备运行时长用电：',
+                    data: '123452 kWh',
+                }, {
+                    name: '冷量指标用电：',
+                    data: '123452 kWh'
+                }],
             }
         },
     }
@@ -592,7 +652,6 @@
   }
   .el-calendar__body {
     padding: 12px 10px 15px;
-
   }
 
   .el-calendar__header{

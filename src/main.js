@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import Axios from 'axios'
 import echarts from 'echarts'
+import {dateFormat} from './util/dateFormat';
 import {Dialog,Link,TabPane,Tabs,RadioButton,RadioGroup,Radio,Divider,Image,Button, Table,TableColumn,Select,Input,Card, Option, Message, Container,Header,Footer,Aside,Main,Form, FormItem,Col,Row,DatePicker,Calendar, ButtonGroup,Icon,OptionGroup, Tooltip,Tree  } from 'element-ui';
 Vue.use(Dialog)
 Vue.use(Link)
@@ -38,7 +39,7 @@ Vue.use(Divider)
 Vue.use(Radio)
 Vue.use(RadioButton)
 Vue.use(RadioGroup)
-
+Vue.prototype.$dateFormat = dateFormat;
 Vue.prototype.$echarts = echarts
 Vue.prototype.$message = Message
 Vue.prototype.$axios=Axios
