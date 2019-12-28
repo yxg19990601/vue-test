@@ -416,13 +416,36 @@
                 // 改变环形图数据
 
                 let tableData2 = this.tableData;
-                  debugger
+
                 //基准器能耗
                 let zjnh = this.tableData[this.month-1].be / new Date(Number(this.selectDate),this.month,0).getDate();
+                //未开放空调区面积
+                let wkfktqmj = 11;
+                // 已开放空调去面积
+                let ykfktqmj = 11;
+                //中央空调总冷量
+                let zyktzll = 11;
+                // 中央空调总用电量
+                let zyktzydl = 11;
+                //以开放空调区域总冷量
+                let ykfktqyzll = 11;
+                //空调冷量指标用电
+                let ktllzbydl = 11;
+                //设备增减运行时长用电量
+                let sbzjyxscydl = 11;
+                //增减设备用电量
+                let zjsbydl = 11;
+                //核定日能耗量
+                let hdrnhl = 11;
                 // 核定器能耗
-                let hdqnh = this.monthdata[(Number(date.split('-')[2])-1).toString()];
-                // 改变表格数据
-                debugger
+                let hdqnh = 1234;
+                // 未开放区域中央空调能耗
+               let wkfqyzyktnh = ykfktqyzll*zyktzydl/zyktzll/ykfktqmj*wkfktqmj;
+              //未开放区域中央空调能耗=已开放空调区域总冷量（冷量表）（kWh）× 中央空调总用电量（kWh）÷ 中央空调总冷量（kWh）÷已开放空调区域面积（m2）× 未开放空调区域面积（m2）
+
+
+
+
             },
 
             handleCalendarData(date) {
