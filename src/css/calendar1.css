@@ -1,0 +1,13 @@
+div[my-data-v-cal1] .el-calendar-day{
+  height: 43px !important;
+}
+div[my-data-v-cal1] .el-calendar__header {
+  display: none;
+}
+
+
+div[my-data-v-cal2] .el-calendar-day{
+  height: 66px !important;
+  padding: 0px !important;
+
+}

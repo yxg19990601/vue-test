@@ -1,9 +1,17 @@
 <template>
   <el-card shadow="always" >
-    <div slot="header" >
-      <el-tooltip class="item" effect="dark" content="Bottom Center 提示文字" placement="bottom">
-      <span>人工录入数据</span>
-      </el-tooltip>
+    <div slot="header" style="text-align:left" >
+
+
+        <div>
+          <span style="margin-right: 275px">人工录入数据界面</span>
+
+          <el-radio size="small" v-model="showValue" label="1" border>显示读表值</el-radio>
+          <el-radio size="small" v-model="showValue" label="2" border>显示能耗值</el-radio>
+
+
+
+        </div>
     </div>
   <el-container >
 
@@ -12,7 +20,7 @@
 
 
 
-      <el-calendar  type="string" style="border:1px solid #EBEEF5"  v-model="dataForm.colDate">
+      <el-calendar  my-data-v-cal2 type="string" style="border:1px solid #EBEEF5"  v-model="dataForm.colDate">
 
         <div
           slot="dateCell"
@@ -20,7 +28,12 @@
 
            {{data.day.split('-')[2]}}
 
-            <div style="font-size: 10px;margin-top: 12px"> {{colSettingData[data.day] === undefined?'':colSettingData[data.day].reportValue}}</div>
+            <div style="font-size: 10px;margin-top: 12px">
+              <template v-if="colSettingData[data.day] !== undefined">
+                <span>{{showValue === '1'?colSettingData[data.day].readValue:colSettingData[data.day].reportValue}}</span>
+              </template>
+
+            </div>
             <i v-if="hasKey() && colSettingData[data.day] !== undefined"  class="el-icon-success" style="color: #00a854;margin-top: 5px"></i>
 
         </div>
@@ -54,15 +67,27 @@
             <span class="custom-tree-node" slot-scope="{ node, data }">
               <span>{{ node.label }}</span>
 
-              <span>
-                {{data.children === undefined ? (data.reportValue === null? '':data.reportValue):'' }}
-              </span>
+
+                <template v-if="data.children === undefined">
+                  <span v-if="showValue === '1'">
+                    {{data.reportValue === null? '':data.readValue}}
+                  </span>
+                  <span v-else>
+                    {{data.reportValue === null? '':data.reportValue}}
+                  </span>
+
+                </template>
+
+
             </span>
 
 
           </el-tree>
         </div></el-col>
         <el-col :span="14"><div class="grid-content bg-purple">
+
+
+
           <el-form @submit.native.prevent style="border:1px solid #EBEEF5" :model="dataForm" label-width="80px">
             <el-row :gutter="20" style="margin: 20px 5px">
               <el-col :span="7" :offset="2"  >
@@ -132,20 +157,7 @@
                         .catch(failResponse => {
                         })
 
-                    this.$axios
-                        .get('/ems/servlet/InputDataAction/getColTree?colDate='+curentDate)
-                        .then(successResponse => {
-                            let curentData = successResponse.data
-                            var thisData = this.data;
-                            for(var n in curentData) {
-                                console.log(n)
-                                for (var m in curentData[n].children) {
-                                    thisData[n].children[m].reportValue = curentData[n].children[m].reportValue
-                                }
-                            }
-                        })
-                        .catch(failResponse => {
-                        })
+                    this.getTreeData();
                     this.$refs.inputeRealValue.focus()
                 } else {
                     this.colSettingData = []
@@ -158,6 +170,7 @@
         name: "addDeviceEnergyRec",
         data(){
           return {
+              showValue:"1",
               colSettingData : {},
               i:0,
               formLabelWidth: '80px',
@@ -183,9 +196,7 @@
         created() {
           this.getTreeData()
             //this.copy = Object.assign(this.options);
-            for (let b in this.data) {
-              this.data[b].disabled = true
-            }
+
         },
         methods: {
             hasKey() {
@@ -230,7 +241,15 @@
                 this.$axios
                     .get('/ems/servlet/InputDataAction/getColTree?colDate='+curentDate)
                     .then(successResponse => {
+                        let currentKey = this.$refs.tree.getCurrentKey();
                         this.data = successResponse.data;
+                        for (let b in this.data) {
+                            this.data[b].disabled = true
+                        }
+                        if(currentKey != null) {
+                            this.$refs.tree.setCheckedKeys([currentKey]);
+                        }
+
                     })
                     .catch(failResponse => {
                     })
@@ -242,7 +261,6 @@
                     this.$message("没有选中采集点!")
                     return false;
                 }
-                debugger
                 let reg = /^(([^0][0-9]*|0)\.([0-9]{1,2})$)|^([^0][0-9]*|0)$/;
 
 
@@ -285,21 +303,7 @@
                             .catch(failResponse => {
                             })
 
-                        this.$axios
-                            .get('/ems/servlet/InputDataAction/getColTree?colDate='+curentDate)
-                            .then(successResponse => {
-                                let curentData = successResponse.data
-                                var thisData = this.data;
-                                for(var n in curentData) {
-                                    console.log(n)
-                                    for (var m in curentData[n].children) {
-                                        thisData[n].children[m].reportValue = curentData[n].children[m].reportValue
-                                    }
-                                }
-                            })
-
-                            .catch(failResponse => {
-                            })
+                        this.getTreeData();
                     })
                     .catch(failResponse => {
                         this.$message("异常:")
@@ -394,12 +398,6 @@
 
 
 </style>
+<style src="../css/calendar1.css"></style>
 
-<style>
-  .el-calendar-day{
-    height: 66px !important;
-    padding: 0px !important;
-
-  }
-</style>
 

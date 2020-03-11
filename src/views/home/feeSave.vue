@@ -316,6 +316,18 @@
                 .catch(failResponse => {
                 })
         },
+        watch:{
+            selectDate(val){
+                this.$axios
+                    .get('/ems/servlet/InputDataAction/getFeeSaveData?year='+this.selectDate)
+                    .then(successResponse => {
+                        this.tableData = successResponse.data;
+                    })
+                    .catch(failResponse => {
+                    })
+            }
+
+        },
         methods : {
             handleValue(value) {
                 if (value) {

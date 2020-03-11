@@ -325,7 +325,7 @@
 
           </el-col>
           <el-col :span="18" align = "center" style="padding: 0px 50px">
-            <el-calendar style="border: 1px solid rgb(235, 238, 245);" v-model="curentDate">
+            <el-calendar my-data-v-cal1 style="border: 1px solid rgb(235, 238, 245);" v-model="curentDate">
               <template
                 slot="dateCell"
                 slot-scope="{date, data}">
@@ -398,6 +398,16 @@
         watch: {
             curentDate:{
                 handler:'handleLeftData'
+            },
+            selectDate(val){
+                console.log(val)
+                this.$axios
+                    .get('/ems/servlet/InputDataAction/getElectricSaveData?year='+this.selectDate)
+                    .then(successResponse => {
+                        this.tableData = successResponse.data;
+                    })
+                    .catch(failResponse => {
+                    })
             }
 
         },
@@ -415,33 +425,50 @@
                 }
                 // 改变环形图数据
 
-                let tableData2 = this.tableData;
+                //let tableData2 = this.tableData;
 
                 //基准器能耗
                 let zjnh = this.tableData[this.month-1].be / new Date(Number(this.selectDate),this.month,0).getDate();
-                //未开放空调区面积
-                let wkfktqmj = 11;
-                // 已开放空调去面积
-                let ykfktqmj = 11;
-                //中央空调总冷量
-                let zyktzll = 11;
-                // 中央空调总用电量
-                let zyktzydl = 11;
-                //以开放空调区域总冷量
-                let ykfktqyzll = 11;
-                //空调冷量指标用电
-                let ktllzbydl = 11;
-                //设备增减运行时长用电量
-                let sbzjyxscydl = 11;
-                //增减设备用电量
-                let zjsbydl = 11;
-                //核定日能耗量
-                let hdrnhl = 11;
-                // 核定器能耗
-                let hdqnh = 1234;
-                // 未开放区域中央空调能耗
-               let wkfqyzyktnh = ykfktqyzll*zyktzydl/zyktzll/ykfktqmj*wkfktqmj;
-              //未开放区域中央空调能耗=已开放空调区域总冷量（冷量表）（kWh）× 中央空调总用电量（kWh）÷ 中央空调总冷量（kWh）÷已开放空调区域面积（m2）× 未开放空调区域面积（m2）
+
+                // 获取某一天的数据
+                this.$axios
+                    .get('/ems/servlet/InputDataAction/getDayData?date='+date+'&treeIds=2895,2896,2897,2898,2899,2900,2909,2911,2912')
+                    .then(successResponse => {
+                        let datas = successResponse.data;
+                        debugger
+                        console.log(datas)
+                        //未开放空调区面积
+                        let wkfktqmj = this.tableData[this.month-1].notopenair;
+                        // 已开放空调去面积
+                        let ykfktqmj = this.tableData[this.month-1].openair;
+
+                        //中央空调总冷量
+                        let zyktzll = 11;
+                        // 中央空调总用电量
+                        let zyktzydl = 11;
+                        //以开放空调区域总冷量
+                        let ykfktqyzll = 11;
+                        //空调冷量指标用电
+                        let ktllzbydl = 11;
+                        //设备增减运行时长用电量
+                        let sbzjyxscydl = 11;
+                        //增减设备用电量
+                        let zjsbydl = 11;
+                        // 核定器能耗
+                        let hdqnh = 1234;
+
+
+                        // 公式2：未开放区域中央空调能耗
+                        //未开放区域中央空调能耗=已开放空调区域总冷量（冷量表）（kWh）× 中央空调总用电量（kWh）÷ 中央空调总冷量（kWh）÷已开放空调区域面积（m2）× 未开放空调区域面积（m2）
+                        let wkfqyzyktnh = ykfktqyzll*zyktzydl/zyktzll/ykfktqmj*wkfktqmj;
+
+                        // 公式1：1.节电量=基准期能耗（2017年电费单）+空调冷量指标用电量（未开放区域）（kWh）+增减设备用电量（kWh）+设备增减运行时长用电量（kWh））-核定期能耗（变压器之和）
+                        let jnl = zjnh+ktllzbydl+zjsbydl+sbzjyxscydl-hdqnh;
+
+                        // 算出结果值， = wkfqyzyktnh；
+                    })
+                    .catch(failResponse => {
+                    })
 
 
 
@@ -647,13 +674,13 @@
 
 </script>
 
+<style src="../../css/calendar1.css"></style>
 <style>
+
   .table-1 td:nth-child(1)  {
      cursor:pointer;
   }
-  .el-calendar-day{
-    height: 43px !important;
-  }
+
   .el-calendar-table:not(.is-range) td.next, .el-calendar-table:not(.is-range) td.prev {
     color: #fff !important;
   }
@@ -667,9 +694,7 @@
   .el-calendar__body {
     padding: 12px 10px 15px;
   }
-  .el-calendar__header{
-    display: none;
-  }
+
   .hr{
     margin: 10px 0px;
     height: 2px;
